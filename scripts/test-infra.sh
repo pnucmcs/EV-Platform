@@ -44,7 +44,7 @@ check_redis() {
 
 check_grafana() {
   local host=$1 port=$2
-  echo "Checking Grafana at http://${host}:${port}..."
+  echo "Checking Grafana at http://${host}:${port}/login..."
   local code
   code=$(curl -s -o /dev/null -w "%{http_code}" --max-time "$TIMEOUT" "http://${host}:${port}/login")
   if [[ "$code" =~ ^2|3 ]]; then
@@ -57,7 +57,7 @@ check_grafana() {
 
 check_prometheus() {
   local host=$1 port=$2
-  echo "Checking Prometheus at http://${host}:${port}..."
+  echo "Checking Prometheus at http://${host}:${port}/-/ready..."
   local code
   code=$(curl -s -o /dev/null -w "%{http_code}" --max-time "$TIMEOUT" "http://${host}:${port}/-/ready")
   if [[ "$code" =~ ^2|3 ]]; then
@@ -75,6 +75,39 @@ check_k8s() {
   echo "Kubernetes OK"
 }
 
+# New function to check RabbitMQ cluster on Kubernetes
+check_rabbitmq() {
+  local namespace=${1:-rabbitmq}
+  echo "Checking RabbitMQ cluster in namespace $namespace..."
+  # Ensure the namespace exists
+  if ! kubectl get namespace "$namespace" >/dev/null 2>&1; then
+    echo "Namespace $namespace does not exist" >&2
+    exit 1
+  fi
+  # Get all RabbitMQ pods
+  local pods
+  pods=$(kubectl get pods -n "$namespace" -l app.kubernetes.io/name=rabbitmq -o jsonpath='{.items[*].metadata.name}')
+  if [[ -z "$pods" ]]; then
+    echo "No RabbitMQ pods found in namespace $namespace" >&2
+    exit 1
+  fi
+  for pod in $pods; do
+    local status
+    status=$(kubectl get pod "$pod" -n "$namespace" -o jsonpath='{.status.phase}')
+    if [[ "$status" != "Running" ]]; then
+      echo "RabbitMQ pod $pod is not running (status=$status)" >&2
+      exit 1
+    fi
+  done
+  echo "All RabbitMQ pods are running."
+  # Check the service exists
+  if ! kubectl get svc rabbitmq -n "$namespace" >/dev/null 2>&1; then
+    echo "RabbitMQ service not found in namespace $namespace" >&2
+    exit 1
+  fi
+  echo "RabbitMQ service is available in namespace $namespace."
+}
+
 main() {
   check_cmd psql
   check_cmd redis-cli
@@ -86,6 +119,8 @@ main() {
   check_grafana "$GRAFANA_HOST" "$GRAFANA_PORT"
   check_prometheus "$PROM_HOST" "$PROM_PORT"
   check_k8s
+  # New check for RabbitMQ
+  check_rabbitmq
 
   echo "All checks passed."
 }

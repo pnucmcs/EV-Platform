@@ -1,0 +1,421 @@
+You are my senior .NET 8 microservices architect and DevOps lead. We are implementing the “Smart EV Charging & Parking Platform” as .NET microservices on Kubernetes. Phase 0 and Phase 1 are already done (architecture + repo strategy + local tooling). We are now starting:
+
+=====================================================
+PHASE 2 — BOOTSTRAP THE FIRST MICROSERVICE(S)
+=====================================================
+
+GOAL OF PHASE 2 (NON-NEGOTIABLE)
+-----------------------------------------------------
+Deliver a clean, production-oriented baseline for the FIRST TWO core services with:
+- .NET 8 ASP.NET Core Web API (Controllers + DTOs; NO Minimal APIs)
+- Clear layering (Domain, Application, Infrastructure, API)
+- Database integration (PostgreSQL via EF Core) for at least the first service
+- Proper validation, mapping, error handling, and consistent API responses
+- Health checks and readiness for containerization and Kubernetes deployment (Phase 3+)
+- Strong correlation with the platform domain (stations/reservations/sessions), no unrelated features
+
+We will implement these two services first:
+1) Station & Parking Service
+2) Reservation & Session Service
+
+We must keep extensibility for Phase 4 (events/messaging) and Phase 6 (API gateway/ingress), but DO NOT implement messaging in Phase 2. Only leave hooks/placeholders.
+
+=====================================================
+IMPORTANT CONSTRAINTS / MY PREFERENCES
+=====================================================
+- Step-by-step guidance: complete one layer at a time, validate builds and runs.
+- Provide exact commands + full file contents where needed.
+- Use DTOs for all requests/responses.
+- Use AutoMapper for mapping.
+- Use FluentValidation for validation.
+- Prefer MediatR for internal command/query handling (CQRS style) unless you can justify skipping it.
+- Use EF Core migrations.
+- Use PostgreSQL for both services in Phase 2 (unless you recommend MongoDB for Stations; if so, justify clearly and still keep at least one service on Postgres for migrations and patterns).
+- Implement robust error handling and consistent response contracts.
+- Keep it realistic: versioning, correlation IDs, OpenTelemetry-ready structure (actual OTel wiring can come later, but don’t block it).
+- Each service must be independently runnable locally via `dotnet run` and must expose Swagger.
+
+Assume OS: Linux (Ubuntu) with .NET 8 SDK installed.
+
+=====================================================
+PHASE 2 DELIVERABLES
+=====================================================
+
+By the end of Phase 2, I must have:
+
+A) TWO repositories (or two service folders if monorepo) containing:
+   - StationService
+   - ReservationService
+
+B) Each service includes:
+   - Solution + projects for:
+     - *.Api
+     - *.Application
+     - *.Domain
+     - *.Infrastructure
+     - *.Contracts (optional; only if you want shared DTO/event contract alignment)
+   - Standard folder structure
+   - appsettings + environment variable config pattern
+   - Swagger enabled
+   - Health endpoints
+   - EF Core configured + migrations applied for Postgres-backed services
+   - Basic CRUD APIs implemented and testable using Swagger
+
+C) Minimum viable domain features:
+   - Station & Parking Service:
+     - Create Station
+     - Update Station
+     - List Stations (with geo fields but simple filtering is fine)
+     - Get Station by Id
+     - Mark Station status (Available/OutOfService/Maintenance)
+     - Optional: manage Charger connectors under a Station
+   - Reservation & Session Service:
+     - Create Reservation
+     - Cancel Reservation
+     - Start Charging Session (from a Reservation)
+     - Stop Charging Session
+     - Get Session by Id
+     - List Sessions by User Id
+
+D) Cross-service contract alignment:
+   - Reservation service must reference StationId and validate the Station exists:
+     - For Phase 2, do validation via synchronous HTTP call to Station service (simple client).
+     - Implement this behind an interface so we can swap to async events later (Phase 4).
+   - Maintain clear boundaries:
+     - No direct DB access across services.
+     - No shared database schema.
+
+E) API design conventions:
+   - Versioned routes: `/api/v1/...`
+   - Consistent response envelope:
+     - success + data OR problem details
+   - Use proper HTTP status codes:
+     - 201 Created, 200 OK, 400 BadRequest, 404 NotFound, 409 Conflict, 422 UnprocessableEntity (if you choose), 500 errors via middleware
+   - Use ProblemDetails for errors.
+
+F) Quality and operational readiness:
+   - Logging baseline (structured logs)
+   - Correlation ID (propagate X-Correlation-ID or generate one)
+   - Health checks:
+     - liveness: `/health/live`
+     - readiness: `/health/ready` (checks DB connectivity)
+
+=====================================================
+WORK PLAN (YOU MUST FOLLOW THIS ORDER)
+=====================================================
+
+You will guide me in the following sub-steps. For each sub-step, give exact commands, file contents, and verification steps.
+
+-----------------------------------------------------
+SUB-STEP 2.1 — REPO / SOLUTION SCAFFOLDING
+-----------------------------------------------------
+1) Create the folder/repo structure for StationService and ReservationService.
+2) Create .NET solutions and projects:
+   - StationService.sln:
+     - StationService.Api
+     - StationService.Application
+     - StationService.Domain
+     - StationService.Infrastructure
+   - ReservationService.sln:
+     - ReservationService.Api
+     - ReservationService.Application
+     - ReservationService.Domain
+     - ReservationService.Infrastructure
+3) Add project references:
+   - Api references Application
+   - Application references Domain
+   - Infrastructure references Application + Domain
+   - Api references Infrastructure (only for DI registration)
+4) Add NuGet packages (explicit versions recommended):
+   - Microsoft.EntityFrameworkCore
+   - Microsoft.EntityFrameworkCore.Design
+   - Npgsql.EntityFrameworkCore.PostgreSQL
+   - AutoMapper + AutoMapper.Extensions.Microsoft.DependencyInjection
+   - FluentValidation + FluentValidation.AspNetCore
+   - MediatR + MediatR.Extensions.Microsoft.DependencyInjection (if used)
+   - Swashbuckle.AspNetCore (Swagger)
+   - Serilog.AspNetCore (or an equivalent)
+   - Microsoft.Extensions.Diagnostics.HealthChecks
+   - AspNetCore.HealthChecks.NpgSql (or implement a DB check yourself)
+   - Optional: Polly (but not required in Phase 2)
+
+Deliverables:
+- Provide commands for `dotnet new sln`, `dotnet new webapi`, `dotnet new classlib`.
+- Provide exact folder tree output after creation.
+
+Verification:
+- `dotnet build` passes for each solution.
+
+-----------------------------------------------------
+SUB-STEP 2.2 — DOMAIN MODEL DESIGN (KEEP IT MINIMAL BUT REALISTIC)
+-----------------------------------------------------
+Design Domain models and enums.
+
+StationService Domain:
+- Entity: Station
+  - Id (Guid)
+  - Name (string)
+  - Address fields (AddressLine1, City, State, Zip, Country) OR a single Address object (value object)
+  - Latitude (decimal)
+  - Longitude (decimal)
+  - Status (enum: Available, OutOfService, Maintenance)
+  - CreatedAtUtc, UpdatedAtUtc
+- Entity: Charger (optional but recommended for realism)
+  - Id (Guid)
+  - StationId (Guid)
+  - ConnectorType (enum: CCS, CHAdeMO, Type2, Tesla)
+  - PowerKw (decimal)
+  - Status (enum: Available, Occupied, OutOfService)
+  - CreatedAtUtc, UpdatedAtUtc
+- Domain rules:
+  - Station name required, max length
+  - Latitude [-90, 90], Longitude [-180, 180]
+  - PowerKw > 0
+  - Station can have multiple chargers
+
+ReservationService Domain:
+- Entity: Reservation
+  - Id (Guid)
+  - UserId (Guid or string; decide and justify)
+  - StationId (Guid)
+  - ChargerId (Guid?) (optional; if included, verify charger belongs to station via StationService call later)
+  - StartTimeUtc, EndTimeUtc
+  - Status (enum: Requested, Confirmed, Cancelled, Expired)
+  - CreatedAtUtc, UpdatedAtUtc
+- Entity: ChargingSession
+  - Id (Guid)
+  - ReservationId (Guid)
+  - UserId
+  - StationId
+  - StartTimeUtc, EndTimeUtc (nullable until stopped)
+  - Status (enum: Active, Completed, Stopped, Failed)
+  - EnergyKwh (decimal, default 0; updated later by Telemetry in Phase 9)
+  - CostEstimate (decimal, optional; final billing later)
+  - CreatedAtUtc, UpdatedAtUtc
+
+Domain rules:
+- Reservation EndTime must be after StartTime
+- Reservation can be started only if not cancelled/expired
+- Exactly one Active session per reservation
+- Basic overlap rule placeholder:
+  - In Phase 2, do a simple conflict check for same StationId + overlapping time windows.
+  - Keep it simple but correct.
+
+Deliverables:
+- Provide C# code for domain entities and enums.
+- Explain where domain rules are enforced (Domain methods vs Application validators/handlers).
+
+Verification:
+- Build passes; entities compile and are referenced in Application layer.
+
+-----------------------------------------------------
+SUB-STEP 2.3 — API CONTRACTS (DTOs) + VALIDATION
+-----------------------------------------------------
+Define DTOs per service with request/response models.
+
+StationService DTOs:
+- CreateStationRequest
+- UpdateStationRequest
+- StationResponse
+- CreateChargerRequest (if chargers included)
+- ChargerResponse
+
+ReservationService DTOs:
+- CreateReservationRequest
+- CancelReservationRequest (or route param)
+- ReservationResponse
+- StartSessionRequest
+- StopSessionRequest
+- ChargingSessionResponse
+
+Validation:
+- Implement FluentValidation validators for each request DTO.
+- Ensure validators run automatically in ASP.NET Core pipeline.
+- Provide clear validation error responses via ProblemDetails.
+
+Deliverables:
+- Full DTO definitions + validators.
+- AutoMapper profiles mapping DTOs ↔ entities.
+
+Verification:
+- Use Swagger to call an endpoint with invalid input and confirm 400 with validation details.
+
+-----------------------------------------------------
+SUB-STEP 2.4 — APPLICATION LAYER (CQRS HANDLERS)
+-----------------------------------------------------
+Implement Application layer with commands/queries:
+StationService:
+- CreateStationCommand / Handler
+- UpdateStationCommand / Handler
+- GetStationByIdQuery / Handler
+- ListStationsQuery / Handler
+- SetStationStatusCommand / Handler
+- (Optional) CreateChargerCommand / Handler, ListChargersByStationQuery
+
+ReservationService:
+- CreateReservationCommand / Handler
+- CancelReservationCommand / Handler
+- StartChargingSessionCommand / Handler
+- StopChargingSessionCommand / Handler
+- GetSessionByIdQuery / Handler
+- ListSessionsByUserQuery / Handler
+
+Implement:
+- Repository interfaces in Application (IStationRepository, IReservationRepository, ISessionRepository)
+- Use dependency inversion: Application depends on interfaces, Infrastructure implements them.
+- Use MediatR to dispatch commands/queries from controllers.
+- Return meaningful results (DTOs or application models) and handle not-found/conflict conditions.
+
+Deliverables:
+- Full handlers code and interface definitions.
+- Explain error handling strategy:
+  - throw custom exceptions and convert via middleware OR return Result<T> objects.
+
+Verification:
+- Unit-level sanity: `dotnet test` optional; but at least compile and run.
+
+-----------------------------------------------------
+SUB-STEP 2.5 — INFRASTRUCTURE LAYER (EF CORE + POSTGRES)
+-----------------------------------------------------
+For each service:
+- Create DbContext
+- Configure EF Core mappings (Fluent API or Data Annotations)
+- Add migrations and apply to Postgres
+- Implement repositories using DbContext
+- Add health checks for Postgres
+
+Database conventions:
+- Use snake_case naming in Postgres (optional but recommended)
+- Use UTC timestamps
+- Use proper indexes:
+  - Station: index on (Latitude, Longitude) optional; at least on Status
+  - Reservation: index on StationId + StartTimeUtc + EndTimeUtc
+  - Session: index on UserId + Status
+
+Deliverables:
+- DbContext code
+- Entity configurations
+- Repository implementations
+- Migrations commands:
+  - `dotnet ef migrations add InitialCreate`
+  - `dotnet ef database update`
+- appsettings.json and appsettings.Development.json samples with connection strings (use placeholders)
+
+Verification:
+- Database created and tables exist.
+- Basic CRUD endpoints work end-to-end with DB persistence.
+
+-----------------------------------------------------
+SUB-STEP 2.6 — API LAYER (CONTROLLERS + MIDDLEWARE + SWAGGER + HEALTH)
+-----------------------------------------------------
+For each service:
+- Controllers:
+  - StationController
+  - ChargerController (optional)
+  - ReservationController
+  - SessionController
+- API versioning:
+  - Use route prefix `/api/v1/...` (no need for Microsoft API Versioning package unless you want it)
+- Swagger:
+  - Enable in Development
+  - Group endpoints by controller
+  - Show request/response examples (optional)
+- Middleware:
+  - Global exception handling producing ProblemDetails
+  - Correlation ID middleware:
+    - Read incoming `X-Correlation-ID` header or generate a new GUID
+    - Add to response headers
+    - Include in logs
+- Health endpoints:
+  - `/health/live`
+  - `/health/ready` (checks DB)
+
+Deliverables:
+- Program.cs configuration with DI setup:
+  - AddApplication(), AddInfrastructure()
+  - AddControllers()
+  - AddSwaggerGen()
+  - AddFluentValidation()
+  - AddHealthChecks()
+  - Logging configuration
+- Provide extension methods for service registration:
+  - StationService.Application: `AddStationApplication()`
+  - StationService.Infrastructure: `AddStationInfrastructure()`
+  - ReservationService.Application: `AddReservationApplication()`
+  - ReservationService.Infrastructure: `AddReservationInfrastructure()`
+
+Verification:
+- `dotnet run` starts both services on different ports
+- Swagger loads
+- Health endpoints return expected results
+
+-----------------------------------------------------
+SUB-STEP 2.7 — CROSS-SERVICE CALL (RESERVATION → STATION VALIDATION)
+-----------------------------------------------------
+Implement synchronous station existence validation in ReservationService:
+- Create interface in Application layer:
+  - IStationDirectoryClient (or similar)
+  - Method: `Task<bool> StationExistsAsync(Guid stationId, CancellationToken ct)`
+- Implement in Infrastructure layer using HttpClient:
+  - Configure HttpClient in DI using typed client
+  - Read StationService base URL from config
+- Add a lightweight endpoint in StationService:
+  - `GET /api/v1/stations/{id}` already exists; reuse it.
+  - Or create `HEAD /api/v1/stations/{id}` (optional).
+- In CreateReservationHandler:
+  - Call StationExistsAsync
+  - If false, return 404 or 400 with appropriate error.
+
+Deliverables:
+- Interface + implementation + DI registration.
+- Configuration keys:
+  - `Services:StationService:BaseUrl`
+- Example appsettings showing how to configure service URL.
+
+Verification:
+- Start both services
+- Create reservation with invalid stationId → returns 404
+- Create reservation with valid stationId → success
+
+NOTE:
+- Keep the station validation behind an interface so later we can replace it with event-driven validation (Phase 4).
+
+-----------------------------------------------------
+SUB-STEP 2.8 — END-TO-END MANUAL TEST PLAN (SWAGGER)
+-----------------------------------------------------
+Provide a concrete test script:
+
+StationService:
+1) Create station
+2) Get station by id
+3) Update station
+4) Set station status
+5) List stations
+
+ReservationService:
+1) Create reservation for existing station
+2) Cancel reservation
+3) Create a new reservation and start session
+4) Stop session
+5) Get session by id
+6) List sessions for user
+
+Include example JSON bodies and expected HTTP responses.
+
+-----------------------------------------------------
+OUTPUT FORMAT REQUIREMENT
+-----------------------------------------------------
+In your response, you must:
+1) Start with “Phase 2 — Sub-step 2.1”
+2) Provide exact commands to run
+3) Provide folder structure
+4) Provide file contents for the critical boilerplate
+5) End with: “Run these commands now and paste the output of X”
+
+CRITICAL:
+- Do not move to Sub-step 2.2 until Sub-step 2.1 completes successfully.
+- Maintain strict correlation to the EV Charging Platform goal.
+- No unrelated microservices. No UI. No payment gateway integration yet.
+- No messaging yet. Only placeholders for later.
+
+BEGIN NOW WITH SUB-STEP 2.1.
