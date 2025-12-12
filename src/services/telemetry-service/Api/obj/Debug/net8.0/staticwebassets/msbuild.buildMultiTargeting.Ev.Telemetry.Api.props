@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/Ev.Telemetry.Api.props" />
+</Project>

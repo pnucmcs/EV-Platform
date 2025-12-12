@@ -1,0 +1,11 @@
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/bin/Debug/net8.0/Ev.Billing.Domain.deps.json
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/bin/Debug/net8.0/Ev.Billing.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/bin/Debug/net8.0/Ev.Billing.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/obj/Debug/net8.0/Ev.Billing.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/obj/Debug/net8.0/Ev.Billing.Domain.AssemblyInfoInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/obj/Debug/net8.0/Ev.Billing.Domain.AssemblyInfo.cs
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/obj/Debug/net8.0/Ev.Billing.Domain.csproj.CoreCompileInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/obj/Debug/net8.0/Ev.Billing.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/obj/Debug/net8.0/refint/Ev.Billing.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/obj/Debug/net8.0/Ev.Billing.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/billing-service/Domain/obj/Debug/net8.0/ref/Ev.Billing.Domain.dll

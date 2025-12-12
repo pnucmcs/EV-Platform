@@ -1,0 +1,11 @@
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/bin/Debug/net8.0/Ev.Auth.Domain.deps.json
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/bin/Debug/net8.0/Ev.Auth.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/bin/Debug/net8.0/Ev.Auth.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/obj/Debug/net8.0/Ev.Auth.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/obj/Debug/net8.0/Ev.Auth.Domain.AssemblyInfoInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/obj/Debug/net8.0/Ev.Auth.Domain.AssemblyInfo.cs
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/obj/Debug/net8.0/Ev.Auth.Domain.csproj.CoreCompileInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/obj/Debug/net8.0/Ev.Auth.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/obj/Debug/net8.0/refint/Ev.Auth.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/obj/Debug/net8.0/Ev.Auth.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Domain/Ev.Auth.Domain/obj/Debug/net8.0/ref/Ev.Auth.Domain.dll

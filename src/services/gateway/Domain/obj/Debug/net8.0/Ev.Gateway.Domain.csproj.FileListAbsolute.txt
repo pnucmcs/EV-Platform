@@ -1,0 +1,11 @@
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/bin/Debug/net8.0/Ev.Gateway.Domain.deps.json
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/bin/Debug/net8.0/Ev.Gateway.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/bin/Debug/net8.0/Ev.Gateway.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/obj/Debug/net8.0/Ev.Gateway.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/obj/Debug/net8.0/Ev.Gateway.Domain.AssemblyInfoInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/obj/Debug/net8.0/Ev.Gateway.Domain.AssemblyInfo.cs
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/obj/Debug/net8.0/Ev.Gateway.Domain.csproj.CoreCompileInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/obj/Debug/net8.0/Ev.Gateway.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/obj/Debug/net8.0/refint/Ev.Gateway.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/obj/Debug/net8.0/Ev.Gateway.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/gateway/Domain/obj/Debug/net8.0/ref/Ev.Gateway.Domain.dll

@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "dgSpecHash": "mml6xWcHp1vb6ch2OF9NOtTetJjJaJj9/LdnRwtDfV70a1Oi/j4RCxA8TDKCmshBKzZ1nsCyV8HQsGpHFtrGCw==",
+  "success": true,
+  "projectFilePath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/auth-service/Application/Ev.Auth.Application/Ev.Auth.Application.csproj",
+  "expectedPackageFiles": [
+    "/Users/prashanthnarahari/.nuget/packages/automapper/12.0.1/automapper.12.0.1.nupkg.sha512",
+    "/Users/prashanthnarahari/.nuget/packages/fluentvalidation/11.4.0/fluentvalidation.11.4.0.nupkg.sha512",
+    "/Users/prashanthnarahari/.nuget/packages/mediatr/11.1.0/mediatr.11.1.0.nupkg.sha512",
+    "/Users/prashanthnarahari/.nuget/packages/mediatr.contracts/1.0.1/mediatr.contracts.1.0.1.nupkg.sha512",
+    "/Users/prashanthnarahari/.nuget/packages/microsoft.csharp/4.7.0/microsoft.csharp.4.7.0.nupkg.sha512",
+    "/Users/prashanthnarahari/.nuget/packages/microsoft.identitymodel.abstractions/7.6.2/microsoft.identitymodel.abstractions.7.6.2.nupkg.sha512",
+    "/Users/prashanthnarahari/.nuget/packages/microsoft.identitymodel.jsonwebtokens/7.6.2/microsoft.identitymodel.jsonwebtokens.7.6.2.nupkg.sha512",
+    "/Users/prashanthnarahari/.nuget/packages/microsoft.identitymodel.logging/7.6.2/microsoft.identitymodel.logging.7.6.2.nupkg.sha512",
+    "/Users/prashanthnarahari/.nuget/packages/microsoft.identitymodel.tokens/7.6.2/microsoft.identitymodel.tokens.7.6.2.nupkg.sha512",
+    "/Users/prashanthnarahari/.nuget/packages/system.identitymodel.tokens.jwt/7.6.2/system.identitymodel.tokens.jwt.7.6.2.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,16 @@
+Key gaps to reach the requested “real persistence + messaging” baseline and a runnable project:
+
+Persistence not wired for most services: Only reservation is using Postgres via EF (src/services/reservation-service/Infrastructure/ReservationDbContext.cs) and station uses Mongo/Redis (src/services/station-service/Infrastructure/StationRepository.cs). Billing, User, Pricing, Notification, Telemetry are still in-memory stubs; no DbContexts/repos/migrations exist for them. Auth still uses in-memory users.
+Migrations missing: No Migrations/ folders or dotnet ef migrations add ... outputs for any service, so databases won’t be provisioned automatically.
+Messaging incomplete: Shared RabbitMQ contracts/publisher exist (src/shared/Ev.Shared.Messaging), and Reservation publishes reservation.created, but consumers aren’t registered anywhere. Billing/Notification/Telemetry don’t handle events; Billing doesn’t emit payment.completed; Station doesn’t publish station.status.changed.
+Version warnings: Build shows EF Core relational version conflict (8.0.4 vs 8.0.8) from mixed package versions in Reservation Api/Infra. Also System.Text.Json 8.0.4 vulnerability warning in Ev.Shared.Messaging.
+Gateway & API wiring: Gateway is a stub (src/services/gateway/Api/Ev.Gateway.Api/Controllers/GatewayController.cs) and doesn’t route traffic. No ingress/API gateway config beyond the list endpoint.
+Docker/K8s absent: No Dockerfiles, docker-compose, or Helm manifests yet, so services can’t be orchestrated locally or on k8s.
+Authentication/authorization: Auth service still in-memory, no password hashing with salt/refresh tokens, and no JWT validation enforced across other services.
+Observability/CI: No OpenTelemetry/Prometheus/Grafana/Loki wiring; no GitHub Actions workflows.
+If you want, I can prioritize:
+
+Align EF Core packages to 8.0.8 and bump System.Text.Json to a safe version.
+Add DbContexts/repos/migrations for Billing/User/Pricing/Auth (Postgres) and generate initial migrations.
+Implement RabbitMQ consumers/publishers for ReservationCreated/PaymentCompleted/StationStatusChanged in Billing/Notification/Telemetry/Station.
+Add Dockerfiles + docker-compose to run Postgres/Mongo/Redis/RabbitMQ and key services.

@@ -1,0 +1,6 @@
+@Ev.Billing.Api_HostAddress = http://localhost:5110
+
+GET {{Ev.Billing.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

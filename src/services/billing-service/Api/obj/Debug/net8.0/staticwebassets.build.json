@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "/kCucVx2R4ttms4GszUaMASM9YjN7bOF0Md9SWGo9ms=",
+  "Source": "Ev.Billing.Api",
+  "BasePath": "_content/Ev.Billing.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

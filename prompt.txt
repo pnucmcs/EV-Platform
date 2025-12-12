@@ -1,0 +1,316 @@
+You are my senior DevOps + .NET architect.
+
+I want you to help me IMPLEMENT, STEP BY STEP, a **Smart EV Charging & Parking Platform** built as **.NET 8 microservices** running on a **Kubernetes cluster**, using **Docker, Helm, RabbitMQ/Kafka, Redis, PostgreSQL, MongoDB, Prometheus/Grafana, and (later) Istio**.
+
+I want the project to be realistic enough to put on my resume and GitHub, but still doable on a homelab or small cloud setup.
+
+=====================================================
+HIGH-LEVEL PROJECT DESCRIPTION
+=====================================================
+
+We’re building a Smart EV Charging & Parking Platform:
+
+- Drivers use a **mobile or web app** to:
+  - Find nearby EV charging stations and parking spots
+  - View availability and pricing
+  - Reserve a time slot
+  - Start/stop charging
+  - Pay for the session
+  - Receive notifications (session started, completed, payment receipt)
+
+- Station / garage operators use an **admin UI/API** to:
+  - Register and configure stations & chargers
+  - Set tariffs/pricing rules
+  - See utilization and revenue reports
+  - Handle maintenance/outages
+
+The backend is a **set of .NET microservices** running on **Kubernetes**, exposed via an API Gateway / Ingress, with **async communication via a message broker**, central **observability**, and **CI/CD pipelines**.
+
+=====================================================
+MICROSERVICE LIST (INITIAL SCOPE)
+=====================================================
+
+We’ll use these microservices (we can split/merge later if needed):
+
+1. API Gateway / Edge (can be done with Ingress + BFF)
+2. Auth & Identity Service
+3. User Profile Service
+4. Station & Parking Service
+5. Pricing & Tariff Service
+6. Reservation & Session Service
+7. Billing & Payment Service
+8. Telemetry & Device Service
+9. Notification Service
+10. Reporting & Analytics Service (can be stubbed initially)
+11. Admin & Configuration Service (can be combined with Station Service at first)
+
+You can propose a smaller MVP subset to start with (e.g. 1, 2, 4, 6, 7, 9), but KEEP THE OVERALL DESIGN in mind so we can expand later.
+
+=====================================================
+TECH STACK & ARCHITECTURE EXPECTATIONS
+=====================================================
+
+### Backend & Language
+
+- .NET 8
+- C#
+- ASP.NET Core Web API (NO minimal APIs for now; use Controllers + DTOs)
+- Options for internal communication:
+  - REST between services initially
+  - gRPC for internal if/when useful
+
+### Libraries & Patterns
+
+- **DTOs** for all external APIs
+- **AutoMapper** for Entity ↔ DTO mapping
+- **FluentValidation** for input validation
+- **MediatR** (optional but preferred) for CQRS-style handlers inside services
+- **Polly** for retries / circuit breakers (or rely on service mesh later)
+- **Serilog** (or similar) for structured logging
+- **OpenTelemetry** for tracing & metrics
+
+### Data & Messaging
+
+- Relational DB: **PostgreSQL** (sessions, billing, tariffs, user profile, reservations)
+- Document DB: **MongoDB** (station metadata, flexible admin config)
+- Cache: **Redis** (availability, frequently accessed data)
+- Message broker:
+  - Either **RabbitMQ** OR **Kafka** (you decide and explain why)
+  - Use for domain events like:
+    - ReservationCreated
+    - ChargingSessionStarted
+    - ChargingSessionCompleted
+    - PaymentCompleted
+    - PaymentFailed
+    - StationStatusChanged
+
+### Kubernetes & Deployment
+
+- Define everything as **Docker containers**
+- Deploy to **Kubernetes**:
+  - Namespaces (e.g. `ev-platform-dev`, `ev-platform-prod`)
+  - Deployments, Services, ConfigMaps, Secrets
+  - Horizontal Pod Autoscaler (HPA) for some services
+- Use **Helm**:
+  - Either one chart per microservice OR a “platform” chart with subcharts — please recommend and justify
+- Ingress:
+  - **NGINX Ingress Controller**
+- Later: **Istio** Service Mesh:
+  - mTLS between services
+  - Traffic control (canaries, blue-green)
+  - Retries/timeouts/fault injection
+  - Metrics and tracing via sidecars
+
+### Observability
+
+- **Prometheus** for metrics
+- **Grafana** for dashboards
+- **Loki + Promtail** OR **EFK** (Elasticsearch + Fluentd + Kibana) for logs
+- **Jaeger** or similar for tracing
+- Integration with .NET via OpenTelemetry
+
+### CI/CD
+
+- GitHub or GitLab (please assume GitHub unless I say otherwise)
+- **GitHub Actions**:
+  - Build & test .NET code
+  - Build container images (Docker or Kaniko)
+  - Push to container registry
+  - Deploy to Kubernetes via Helm
+  - Environments: dev → staging → prod (even if all in single cluster, treat them separately via namespaces)
+
+=====================================================
+MY PREFERENCES FOR HOW YOU SHOULD GUIDE ME
+=====================================================
+
+- I prefer **step-by-step, incremental** guidance.
+- For each step:
+  - EXPLAIN what we’re doing and WHY at a high level
+  - Then give **concrete actions**:
+    - project structure
+    - command lines (dotnet, docker, kubectl, helm, etc.)
+    - code skeletons / snippets
+    - YAML manifests
+  - Focus on things I can **copy–paste and adapt**
+- Don’t jump 5 steps ahead; finish one layer properly before moving on.
+- When there are multiple options (e.g. RabbitMQ vs Kafka), briefly compare and pick one for this project.
+- Assume I’m using:
+  - Linux (Ubuntu) or WSL for development
+  - A Kubernetes cluster I control (can be local)
+- Don’t assume cloud vendor specifics unless we NEED them.
+
+=====================================================
+IMPLEMENTATION ROADMAP (PHASES)
+=====================================================
+
+I want you to drive us through phases like this (you can refine them):
+
+PHASE 0 — High-Level Architecture & Repo Strategy
+-------------------------------------------------
+- Define the overall architecture diagram (conceptually).
+- Decide on:
+  - polyrepo vs monorepo (recommendation + trade-offs)
+  - solution & project naming conventions
+  - folder/repo structure (e.g. `ev-gateway`, `ev-auth-service`, etc.)
+- Deliverables:
+  - Text description of architecture
+  - Proposed GitHub org + repo layout
+  - Naming conventions for services, namespaces, images, etc.
+
+PHASE 1 — Local Dev Environment Setup
+-------------------------------------
+- Tools:
+  - .NET 8 SDK
+  - Docker / Docker Compose
+  - kubectl, Helm
+  - (Optional) Tilt / Skaffold if helpful
+- Verify .NET + Docker + kubectl + helm all working.
+- Deliverables:
+  - Commands to install/verify
+  - A short checklist to confirm environment is ready
+
+PHASE 2 — Bootstrap the First Microservice(s)
+---------------------------------------------
+- Pick 1–2 core services to start:
+  - e.g. `Station & Parking Service` and `Reservation & Session Service`
+- For EACH service:
+  - Create `.NET 8 Web API` project
+  - Define domain models, DTOs, basic CRUD endpoints
+  - Set up:
+    - AutoMapper
+    - FluentValidation
+    - EF Core (for PostgreSQL, where applicable)
+    - Proper layering (Domain, Application, Infrastructure, API)
+- Provide:
+  - `dotnet new` commands
+  - Example `Program.cs` / `Startup` config
+  - Example entity + DbContext
+  - Example controller + DTO + validation + mapping
+
+PHASE 3 — Dockerize the Services & Local Compose
+------------------------------------------------
+- Write **Dockerfiles** for each service:
+  - Multi-stage build (restore, build, publish, runtime)
+  - Non-root user if possible
+- Create a **docker-compose.yml** for:
+  - The services
+  - PostgreSQL, MongoDB, RabbitMQ/Kafka, Redis
+- Goals:
+  - `docker compose up` starts everything locally
+  - Health checks & basic connectivity works
+- Deliverables:
+  - Dockerfile templates
+  - docker-compose.yml with service definitions and networks
+  - Environment variable conventions
+
+PHASE 4 — Add Core Domain Logic & Events
+----------------------------------------
+- Implement basic flows:
+  - Create stations
+  - List stations
+  - Create reservations
+  - Start/stop sessions (without real telemetry yet)
+- Introduce **domain events** and messaging:
+  - Define event contracts (C# classes)
+  - Implement publishing/subscribing with RabbitMQ/Kafka
+- Show how services communicate:
+  - Reservation Service emits `ReservationCreated`
+  - Billing/Notification services subscribe
+- Deliverables:
+  - Event contracts
+  - Messaging abstraction in .NET (producer/consumer)
+  - Example code for sending & handling events
+
+PHASE 5 — Kubernetes Manifests / Helm Charts
+--------------------------------------------
+- Create Kubernetes objects for each service:
+  - Deployment, Service, ConfigMap, Secret
+  - Possibly one namespace (`ev-platform-dev`) to start
+- Then move to **Helm**:
+  - Define `values.yaml`
+  - Templates for Deployment, Service, Ingress, HPA
+  - Shared helper templates if useful
+- Goal:
+  - `helm install` deploys core services + dependencies into the cluster
+- Deliverables:
+  - Raw YAML examples
+  - Helm chart structure (`charts/ev-station-service`, etc.)
+  - Commands to deploy/upgrade/uninstall
+
+PHASE 6 — API Gateway / Ingress & BFF
+-------------------------------------
+- Decide whether to:
+  - Use just **NGINX Ingress + path-based routing** to services
+  - OR add a **.NET API Gateway/BFF** that fronts all services
+- Implement:
+  - Basic routing from a single external hostname to internal services
+  - Versioned APIs (e.g. `/api/v1/stations`)
+- Deliverables:
+  - Ingress manifest / Helm config
+  - Gateway/BFF skeleton if we use one
+  - Example external URL flows
+
+PHASE 7 — Observability (Logs, Metrics, Traces)
+-----------------------------------------------
+- Add:
+  - OpenTelemetry instrumentation in .NET services
+  - Prometheus scraping
+  - Grafana dashboards
+  - Centralized logging solution (Loki or EFK)
+- Demonstrate:
+  - How to see per-service metrics
+  - How to trace a request through multiple services
+- Deliverables:
+  - Sample `appsettings` for logging
+  - OpenTelemetry setup code
+  - Helm values for Prometheus/Grafana/Loki if needed
+
+PHASE 8 — CI/CD Pipeline
+------------------------
+- Using GitHub Actions:
+  - Workflow for:
+    - Build & test .NET
+    - Build & push Docker images
+    - Deploy to Kubernetes via Helm (dev, staging, prod)
+- Include:
+  - Versioning strategy for images
+  - Environment-specific values (Helm values files)
+- Deliverables:
+  - `.github/workflows/build-and-deploy.yml` example
+  - Explanation of secrets needed (registry creds, kubeconfig, etc.)
+
+PHASE 9 — Advanced Features (Later)
+-----------------------------------
+- Add **Telemetry & Device Service** with fake/simulated chargers
+- Add **Billing & Payment** integrating with a sandbox provider (Stripe test mode)
+- Add **Notification Service** (email via SMTP, push notifications stub)
+- Add **Istio** for:
+  - mTLS
+  - traffic shifting
+  - retries & timeouts config
+- Add **Reporting / Analytics** via materialized views or a small data pipeline.
+
+=====================================================
+HOW I WANT YOU TO RESPOND
+=====================================================
+
+For EACH reply:
+
+1. Start by telling me **which phase / sub-step** we’re working on.
+2. Provide a **brief overview** (2–4 sentences) of what we’re about to do.
+3. Then give:
+   - Clear numbered steps.
+   - Exact commands (dotnet, docker, kubectl, helm, etc.).
+   - Example files in full (csproj, Program.cs, Dockerfile, YAML, etc.) where relevant.
+4. Assume I’ll COPY–PASTE your examples, then tweak them.
+5. Don’t ask for clarification unless absolutely necessary; make reasonable assumptions and move forward.
+6. At the end of each reply, tell me **what you expect me to do next** (e.g. “Run these commands and paste the output of X” or “Create these files and confirm when done”).
+
+Let’s begin now at **PHASE 0 — High-Level Architecture & Repo Strategy.**
+
+First, PLEASE:
+- Summarize the full architecture in your own words.
+- Propose:
+  - Repo structure (polyrepo vs monorepo)
+  - Naming conventions for services, Docker images, K8s namespaces
+- Show me a text-based “architecture diagram” (using bullets/indentation) showing all services and their interactions (HTTP vs events, databases, etc.).

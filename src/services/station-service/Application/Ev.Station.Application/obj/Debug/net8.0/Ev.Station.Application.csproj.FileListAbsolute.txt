@@ -1,0 +1,15 @@
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/Ev.Station.Application.csproj.AssemblyReference.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/Ev.Station.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/Ev.Station.Application.AssemblyInfoInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/Ev.Station.Application.AssemblyInfo.cs
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/Ev.Station.Application.csproj.CoreCompileInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/bin/Debug/net8.0/Ev.Station.Application.deps.json
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/bin/Debug/net8.0/Ev.Station.Application.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/bin/Debug/net8.0/Ev.Station.Application.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/bin/Debug/net8.0/Ev.Station.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/bin/Debug/net8.0/Ev.Station.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/Ev.Stati.D8295FD0.Up2Date
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/Ev.Station.Application.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/refint/Ev.Station.Application.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/Ev.Station.Application.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/station-service/Application/Ev.Station.Application/obj/Debug/net8.0/ref/Ev.Station.Application.dll

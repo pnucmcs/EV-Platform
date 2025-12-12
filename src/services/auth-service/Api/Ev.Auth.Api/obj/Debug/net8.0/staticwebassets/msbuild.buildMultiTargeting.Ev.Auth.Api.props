@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/Ev.Auth.Api.props" />
+</Project>

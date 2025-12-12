@@ -1,0 +1,402 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Api/Ev.Reservation.Api/Ev.Reservation.Api.csproj": {}
+  },
+  "projects": {
+    "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Api/Ev.Reservation.Api/Ev.Reservation.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Api/Ev.Reservation.Api/Ev.Reservation.Api.csproj",
+        "projectName": "Ev.Reservation.Api",
+        "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Api/Ev.Reservation.Api/Ev.Reservation.Api.csproj",
+        "packagesPath": "/Users/prashanthnarahari/.nuget/packages/",
+        "outputPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Api/Ev.Reservation.Api/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prashanthnarahari/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Application/Ev.Reservation.Application/Ev.Reservation.Application.csproj": {
+                "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Application/Ev.Reservation.Application/Ev.Reservation.Application.csproj"
+              },
+              "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/Ev.Reservation.Domain.csproj": {
+                "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/Ev.Reservation.Domain.csproj"
+              },
+              "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Infrastructure/Ev.Reservation.Infrastructure/Ev.Reservation.Infrastructure.csproj": {
+                "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Infrastructure/Ev.Reservation.Infrastructure/Ev.Reservation.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
+            "FluentValidation.AspNetCore": {
+              "target": "Package",
+              "version": "[11.3.1, )"
+            },
+            "MediatR.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[11.1.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.5.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Application/Ev.Reservation.Application/Ev.Reservation.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Application/Ev.Reservation.Application/Ev.Reservation.Application.csproj",
+        "projectName": "Ev.Reservation.Application",
+        "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Application/Ev.Reservation.Application/Ev.Reservation.Application.csproj",
+        "packagesPath": "/Users/prashanthnarahari/.nuget/packages/",
+        "outputPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Application/Ev.Reservation.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prashanthnarahari/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/Ev.Reservation.Domain.csproj": {
+                "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/Ev.Reservation.Domain.csproj"
+              },
+              "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/shared/Ev.Shared.Messaging/Ev.Shared.Messaging.csproj": {
+                "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/shared/Ev.Shared.Messaging/Ev.Shared.Messaging.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
+            "FluentValidation": {
+              "target": "Package",
+              "version": "[11.4.0, )"
+            },
+            "MediatR": {
+              "target": "Package",
+              "version": "[11.1.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/Ev.Reservation.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/Ev.Reservation.Domain.csproj",
+        "projectName": "Ev.Reservation.Domain",
+        "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/Ev.Reservation.Domain.csproj",
+        "packagesPath": "/Users/prashanthnarahari/.nuget/packages/",
+        "outputPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prashanthnarahari/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Infrastructure/Ev.Reservation.Infrastructure/Ev.Reservation.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Infrastructure/Ev.Reservation.Infrastructure/Ev.Reservation.Infrastructure.csproj",
+        "projectName": "Ev.Reservation.Infrastructure",
+        "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Infrastructure/Ev.Reservation.Infrastructure/Ev.Reservation.Infrastructure.csproj",
+        "packagesPath": "/Users/prashanthnarahari/.nuget/packages/",
+        "outputPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Infrastructure/Ev.Reservation.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prashanthnarahari/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Application/Ev.Reservation.Application/Ev.Reservation.Application.csproj": {
+                "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Application/Ev.Reservation.Application/Ev.Reservation.Application.csproj"
+              },
+              "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/Ev.Reservation.Domain.csproj": {
+                "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/services/reservation-service/Domain/Ev.Reservation.Domain/Ev.Reservation.Domain.csproj"
+              },
+              "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/shared/Ev.Shared.Messaging/Ev.Shared.Messaging.csproj": {
+                "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/shared/Ev.Shared.Messaging/Ev.Shared.Messaging.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/shared/Ev.Shared.Messaging/Ev.Shared.Messaging.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/shared/Ev.Shared.Messaging/Ev.Shared.Messaging.csproj",
+        "projectName": "Ev.Shared.Messaging",
+        "projectPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/shared/Ev.Shared.Messaging/Ev.Shared.Messaging.csproj",
+        "packagesPath": "/Users/prashanthnarahari/.nuget/packages/",
+        "outputPath": "/Users/prashanthnarahari/Desktop/microservices/EV-Platform/src/shared/Ev.Shared.Messaging/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prashanthnarahari/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "RabbitMQ.Client": {
+              "target": "Package",
+              "version": "[6.8.1, )"
+            },
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

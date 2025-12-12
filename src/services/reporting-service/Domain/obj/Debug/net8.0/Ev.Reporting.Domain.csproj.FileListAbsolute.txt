@@ -1,0 +1,11 @@
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/bin/Debug/net8.0/Ev.Reporting.Domain.deps.json
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/bin/Debug/net8.0/Ev.Reporting.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/bin/Debug/net8.0/Ev.Reporting.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/obj/Debug/net8.0/Ev.Reporting.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/obj/Debug/net8.0/Ev.Reporting.Domain.AssemblyInfoInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/obj/Debug/net8.0/Ev.Reporting.Domain.AssemblyInfo.cs
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/obj/Debug/net8.0/Ev.Reporting.Domain.csproj.CoreCompileInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/obj/Debug/net8.0/Ev.Reporting.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/obj/Debug/net8.0/refint/Ev.Reporting.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/obj/Debug/net8.0/Ev.Reporting.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/reporting-service/Domain/obj/Debug/net8.0/ref/Ev.Reporting.Domain.dll

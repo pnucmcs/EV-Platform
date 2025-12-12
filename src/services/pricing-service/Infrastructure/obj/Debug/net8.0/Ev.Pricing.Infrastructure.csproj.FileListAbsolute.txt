@@ -1,0 +1,11 @@
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/bin/Debug/net8.0/Ev.Pricing.Infrastructure.deps.json
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/bin/Debug/net8.0/Ev.Pricing.Infrastructure.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/bin/Debug/net8.0/Ev.Pricing.Infrastructure.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/obj/Debug/net8.0/Ev.Pricing.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/obj/Debug/net8.0/Ev.Pricing.Infrastructure.AssemblyInfoInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/obj/Debug/net8.0/Ev.Pricing.Infrastructure.AssemblyInfo.cs
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/obj/Debug/net8.0/Ev.Pricing.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/obj/Debug/net8.0/Ev.Pricing.Infrastructure.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/obj/Debug/net8.0/refint/Ev.Pricing.Infrastructure.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/obj/Debug/net8.0/Ev.Pricing.Infrastructure.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/pricing-service/Infrastructure/obj/Debug/net8.0/ref/Ev.Pricing.Infrastructure.dll

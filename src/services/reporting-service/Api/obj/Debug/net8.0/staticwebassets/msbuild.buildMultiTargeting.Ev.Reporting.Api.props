@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/Ev.Reporting.Api.props" />
+</Project>

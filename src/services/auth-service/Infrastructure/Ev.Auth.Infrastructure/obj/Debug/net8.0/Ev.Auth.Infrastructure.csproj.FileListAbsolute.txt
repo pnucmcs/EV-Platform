@@ -1,0 +1,17 @@
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/bin/Debug/net8.0/Ev.Auth.Infrastructure.deps.json
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/bin/Debug/net8.0/Ev.Auth.Infrastructure.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/bin/Debug/net8.0/Ev.Auth.Infrastructure.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/bin/Debug/net8.0/Ev.Auth.Application.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/bin/Debug/net8.0/Ev.Auth.Domain.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/bin/Debug/net8.0/Ev.Auth.Application.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/bin/Debug/net8.0/Ev.Auth.Domain.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/Ev.Auth.Infrastructure.csproj.AssemblyReference.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/Ev.Auth.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/Ev.Auth.Infrastructure.AssemblyInfoInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/Ev.Auth.Infrastructure.AssemblyInfo.cs
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/Ev.Auth.Infrastructure.csproj.CoreCompileInputs.cache
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/Ev.Auth..278B7E75.Up2Date
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/Ev.Auth.Infrastructure.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/refint/Ev.Auth.Infrastructure.dll
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/Ev.Auth.Infrastructure.pdb
+/Users/prashanthnarahari/Documents/code/microservices/ev-parking/src/services/auth-service/Infrastructure/Ev.Auth.Infrastructure/obj/Debug/net8.0/ref/Ev.Auth.Infrastructure.dll

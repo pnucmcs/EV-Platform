@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Ev.Auth.Domain/1.0.0": {
+        "runtime": {
+          "Ev.Auth.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Ev.Auth.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

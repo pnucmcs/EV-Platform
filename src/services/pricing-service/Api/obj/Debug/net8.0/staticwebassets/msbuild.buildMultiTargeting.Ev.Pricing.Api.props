@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/Ev.Pricing.Api.props" />
+</Project>
