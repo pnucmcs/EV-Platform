@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Ev.Reservation.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/reservations")]
 public class ReservationsController : ControllerBase
 {
     private readonly IReservationService _reservationService;

@@ -9,5 +9,6 @@ public sealed class ReservationProfile : Profile
     public ReservationProfile()
     {
         CreateMap<Ev.Reservation.Domain.Reservation, ReservationDto>();
+        CreateMap<Ev.Reservation.Domain.ChargingSession, ChargingSessionDto>();
     }
 }
