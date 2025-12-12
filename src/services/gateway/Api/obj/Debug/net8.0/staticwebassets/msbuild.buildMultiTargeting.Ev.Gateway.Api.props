@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/Ev.Gateway.Api.props" />
-</Project>

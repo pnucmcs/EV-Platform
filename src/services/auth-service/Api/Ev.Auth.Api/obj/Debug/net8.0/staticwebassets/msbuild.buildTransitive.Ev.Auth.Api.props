@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../buildMultiTargeting/Ev.Auth.Api.props" />
-</Project>
