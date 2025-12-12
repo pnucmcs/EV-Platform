@@ -1,17 +1,17 @@
 using Ev.Station.Application.Services;
 using Ev.Station.Domain;
 using Ev.Shared.Messaging.RabbitMq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
+using Ev.Station.Infrastructure.Persistence;
 
 namespace Ev.Station.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddStationInfrastructure(this IServiceCollection services, StationMongoSettings mongoSettings, string redisConnection, RabbitMqOptions rabbitOptions)
+    public static IServiceCollection AddStationInfrastructure(this IServiceCollection services, string postgresConnection, RabbitMqOptions rabbitOptions)
     {
-        services.AddSingleton(mongoSettings);
-        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnection));
+        services.AddDbContext<StationDbContext>(opt => opt.UseNpgsql(postgresConnection));
         services.AddScoped<IStationRepository, StationRepository>();
         services.AddScoped<IStationService, StationService>();
         services.AddSingleton(rabbitOptions);

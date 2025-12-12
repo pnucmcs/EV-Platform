@@ -1,7 +1,10 @@
 using Ev.Station.Infrastructure;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Ev.Shared.Messaging.RabbitMq;
+using Ev.Station.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,16 +15,23 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(Ev.Station.Application.Mapping.StationProfile).Assembly);
 builder.Services.AddValidatorsFromAssemblyContaining<Ev.Station.Application.Validation.CreateStationRequestValidator>();
+builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddMediatR(typeof(Ev.Station.Application.Services.IStationService).Assembly);
 
-var mongoSettings = new StationMongoSettings
-{
-    ConnectionString = builder.Configuration["EV__MONGO__CONNECTIONSTRING"] ?? "mongodb://localhost:27017",
-    Database = builder.Configuration["EV__MONGO__DATABASE"] ?? "ev_platform",
-    Collection = builder.Configuration["EV__MONGO__STATIONS_COLLECTION"] ?? "stations"
-};
-var redisConnection = builder.Configuration["EV__REDIS__CONNECTIONSTRING"] ?? "localhost:6379";
+var connString = builder.Configuration.GetConnectionString("StationDb") ??
+                 builder.Configuration["EV__POSTGRES__CONNECTIONSTRING"] ??
+                 "Host=localhost;Port=5432;Database=station_db;Username=admin;Password=admin";
+
 var rabbitSection = builder.Configuration.GetSection("RabbitMq");
+var rabbitOptions = new RabbitMqOptions
+{
+    HostName = rabbitSection.GetValue<string>("Host") ?? "localhost",
+    Port = rabbitSection.GetValue<int?>("Port") ?? 5672,
+    UserName = rabbitSection.GetValue<string>("UserName") ?? "guest",
+    Password = rabbitSection.GetValue<string>("Password") ?? "guest",
+    Exchange = rabbitSection.GetValue<string>("Exchange") ?? "ev.events"
+};
+
 builder.Services.AddRabbitMqPublisher(opt =>
 {
     opt.HostName = rabbitSection.GetValue<string>("Host") ?? "localhost";
@@ -31,17 +41,10 @@ builder.Services.AddRabbitMqPublisher(opt =>
     opt.Exchange = rabbitSection.GetValue<string>("Exchange") ?? "ev.events";
 });
 
-builder.Services.AddStationInfrastructure(
-    mongoSettings,
-    redisConnection,
-    new RabbitMqOptions
-    {
-        HostName = rabbitSection.GetValue<string>("Host") ?? "localhost",
-        Port = rabbitSection.GetValue<int?>("Port") ?? 5672,
-        UserName = rabbitSection.GetValue<string>("UserName") ?? "guest",
-        Password = rabbitSection.GetValue<string>("Password") ?? "guest",
-        Exchange = rabbitSection.GetValue<string>("Exchange") ?? "ev.events"
-    });
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<StationDbContext>("station-db");
+
+builder.Services.AddStationInfrastructure(connString, rabbitOptions);
 
 var app = builder.Build();
 
@@ -54,6 +57,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<StationDbContext>();
+    db.Database.Migrate();
+}
+
 app.MapControllers();
+app.MapHealthChecks("/health/ready");
+app.MapHealthChecks("/health/live");
 
 app.Run();
