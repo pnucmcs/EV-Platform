@@ -1,6 +1,6 @@
 using AutoMapper;
 using Ev.Notification.Application.Models;
-using Ev.Notification.Domain;
+using DomainNotification = Ev.Notification.Domain.Notification;
 
 namespace Ev.Notification.Application.Mapping;
 
@@ -8,6 +8,6 @@ public class NotificationProfile : Profile
 {
     public NotificationProfile()
     {
-        CreateMap<Notification, NotificationDto>();
+        CreateMap<DomainNotification, NotificationDto>();
     }
 }

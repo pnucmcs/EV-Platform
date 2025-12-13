@@ -19,17 +19,16 @@
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.10.0-beta.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\\Application\\Ev.Notification.Application.csproj" />
-    <ProjectReference Include="..\\Infrastructure\\Ev.Notification.Infrastructure.csproj" />
-    <ProjectReference Include="..\\Domain\\Ev.Notification.Domain.csproj" />
-    <ProjectReference Include="..\\..\\..\\shared\\Ev.Platform.Contracts\\Ev.Platform.Contracts.csproj" />
-    <ProjectReference Include="..\\..\\..\\shared\\Ev.Shared.Messaging\\Ev.Shared.Messaging.csproj" />
+    <ProjectReference Include="..\\Application\\Ev.AdminConfig.Application.csproj" />
+    <ProjectReference Include="..\\Infrastructure\\Ev.AdminConfig.Infrastructure.csproj" />
+    <ProjectReference Include="..\\Domain\\Ev.AdminConfig.Domain.csproj" />
   </ItemGroup>
 
 </Project>
