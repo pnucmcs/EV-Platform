@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stationservice-config
+  namespace: ev-platform-dev
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  Kestrel__Endpoints__Http__Url: "http://0.0.0.0:8080"
+  App__Name: "station-service"
+  App__Version: "1.0.0"
+  App__Environment: "Production"

@@ -1,0 +1,13 @@
+image:
+  tag: latest
+
+env:
+  aspnetcoreEnvironment: Development
+  kestrelUrl: http://0.0.0.0:8080
+  app:
+    name: station-service
+    version: 1.0.0
+    environment: Development
+
+secrets:
+  postgresConnection: "Host=192.168.1.191;Port=5432;Database=station_db;Username=admin;Password=admin"

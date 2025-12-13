@@ -12,9 +12,19 @@ public sealed class ReservationRepository : IReservationRepository
         _db = db;
     }
 
-    public async Task AddAsync(Domain.Reservation reservation, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Domain.Reservation reservation, IEnumerable<object>? outboxMessages = null, CancellationToken cancellationToken = default)
     {
         _db.Reservations.Add(reservation);
+        if (outboxMessages is not null)
+        {
+            foreach (var msg in outboxMessages)
+            {
+                if (msg is Domain.OutboxMessage om)
+                {
+                    _db.OutboxMessages.Add(om);
+                }
+            }
+        }
         await _db.SaveChangesAsync(cancellationToken);
     }
 
@@ -29,9 +39,19 @@ public sealed class ReservationRepository : IReservationRepository
         return await _db.Reservations.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task UpdateAsync(Domain.Reservation reservation, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Domain.Reservation reservation, IEnumerable<object>? outboxMessages = null, CancellationToken cancellationToken = default)
     {
         _db.Reservations.Update(reservation);
+        if (outboxMessages is not null)
+        {
+            foreach (var msg in outboxMessages)
+            {
+                if (msg is Domain.OutboxMessage om)
+                {
+                    _db.OutboxMessages.Add(om);
+                }
+            }
+        }
         await _db.SaveChangesAsync(cancellationToken);
     }
 
@@ -57,15 +77,35 @@ public sealed class ReservationRepository : IReservationRepository
         return await _db.ChargingSessions.AsNoTracking().FirstOrDefaultAsync(x => x.Id == sessionId, cancellationToken);
     }
 
-    public async Task AddSessionAsync(ChargingSession session, CancellationToken cancellationToken = default)
+    public async Task AddSessionAsync(ChargingSession session, IEnumerable<object>? outboxMessages = null, CancellationToken cancellationToken = default)
     {
         _db.ChargingSessions.Add(session);
+        if (outboxMessages is not null)
+        {
+            foreach (var msg in outboxMessages)
+            {
+                if (msg is Domain.OutboxMessage om)
+                {
+                    _db.OutboxMessages.Add(om);
+                }
+            }
+        }
         await _db.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateSessionAsync(ChargingSession session, CancellationToken cancellationToken = default)
+    public async Task UpdateSessionAsync(ChargingSession session, IEnumerable<object>? outboxMessages = null, CancellationToken cancellationToken = default)
     {
         _db.ChargingSessions.Update(session);
+        if (outboxMessages is not null)
+        {
+            foreach (var msg in outboxMessages)
+            {
+                if (msg is Domain.OutboxMessage om)
+                {
+                    _db.OutboxMessages.Add(om);
+                }
+            }
+        }
         await _db.SaveChangesAsync(cancellationToken);
     }
 

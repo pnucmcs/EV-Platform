@@ -2,8 +2,8 @@ using AutoMapper;
 using Ev.Reservation.Application.Dtos;
 using Ev.Reservation.Application.Requests;
 using Ev.Reservation.Domain;
-using Ev.Shared.Messaging.Events;
-using Ev.Shared.Messaging.RabbitMq;
+using Ev.Platform.Contracts;
+using Ev.Platform.Contracts.Events;
 
 namespace Ev.Reservation.Application.Services;
 
@@ -11,14 +11,12 @@ public sealed class ReservationService : IReservationService
 {
     private readonly IReservationRepository _repository;
     private readonly IMapper _mapper;
-    private readonly IRabbitMqPublisher _publisher;
     private readonly IStationDirectoryClient _stationDirectory;
 
-    public ReservationService(IReservationRepository repository, IMapper mapper, IRabbitMqPublisher publisher, IStationDirectoryClient stationDirectory)
+    public ReservationService(IReservationRepository repository, IMapper mapper, IStationDirectoryClient stationDirectory)
     {
         _repository = repository;
         _mapper = mapper;
-        _publisher = publisher;
         _stationDirectory = stationDirectory;
     }
 
@@ -49,8 +47,29 @@ public sealed class ReservationService : IReservationService
         }
 
         var reservation = Domain.Reservation.Create(request.UserId, request.StationId, request.StartsAtUtc, request.EndsAtUtc);
-        await _repository.AddAsync(reservation, cancellationToken);
-        _publisher.Publish("reservation.created", new ReservationCreated(reservation.Id, reservation.UserId, reservation.StationId, reservation.StartsAtUtc, reservation.EndsAtUtc));
+
+        var evt = new ReservationCreatedV1
+        {
+            ReservationId = reservation.Id,
+            StationId = reservation.StationId,
+            UserId = reservation.UserId,
+            StartsAtUtc = reservation.StartsAtUtc,
+            EndsAtUtc = reservation.EndsAtUtc,
+            Status = reservation.Status.ToString()
+        };
+        var correlationId = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+        var envelope = new EventEnvelope<ReservationCreatedV1>(evt, correlationId: correlationId, producer: "reservation-service@1.0.0");
+        var outbox = new Domain.OutboxMessage
+        {
+            Id = envelope.EventId,
+            OccurredAtUtc = envelope.OccurredAtUtc,
+            Type = envelope.EventType,
+            RoutingKey = EventRoutingKeys.ReservationCreatedV1,
+            PayloadJson = System.Text.Json.JsonSerializer.Serialize(envelope),
+            CorrelationId = envelope.CorrelationId
+        };
+
+        await _repository.AddAsync(reservation, new[] { outbox }, cancellationToken);
         return _mapper.Map<ReservationDto>(reservation);
     }
 
@@ -86,7 +105,28 @@ public sealed class ReservationService : IReservationService
         }
 
         var session = Domain.ChargingSession.Start(request.ReservationId, request.StationId, request.ChargerId, request.StartedAtUtc);
-        await _repository.AddSessionAsync(session, cancellationToken);
+
+        var evt = new ChargingSessionStartedV1
+        {
+            SessionId = session.Id,
+            ReservationId = session.ReservationId,
+            StationId = session.StationId,
+            ChargerId = session.ChargerId,
+            StartedAtUtc = session.StartedAtUtc
+        };
+        var correlationId = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+        var envelope = new EventEnvelope<ChargingSessionStartedV1>(evt, correlationId: correlationId, producer: "reservation-service@1.0.0");
+        var outbox = new Domain.OutboxMessage
+        {
+            Id = envelope.EventId,
+            OccurredAtUtc = envelope.OccurredAtUtc,
+            Type = envelope.EventType,
+            RoutingKey = EventRoutingKeys.ChargingSessionStartedV1,
+            PayloadJson = System.Text.Json.JsonSerializer.Serialize(envelope),
+            CorrelationId = envelope.CorrelationId
+        };
+
+        await _repository.AddSessionAsync(session, new[] { outbox }, cancellationToken);
         return _mapper.Map<ChargingSessionDto>(session);
     }
 
@@ -98,10 +138,13 @@ public sealed class ReservationService : IReservationService
             return null;
         }
 
+        var outboxMessages = new List<object>();
+
         switch (request.Status)
         {
             case ChargingSessionStatus.Completed:
                 session.Complete(request.EndedAtUtc ?? DateTime.UtcNow);
+                outboxMessages.Add(BuildSessionCompletedOutbox(session));
                 break;
             case ChargingSessionStatus.Failed:
                 session.Fail();
@@ -111,10 +154,36 @@ public sealed class ReservationService : IReservationService
                 break;
             default:
                 session.Complete(request.EndedAtUtc ?? DateTime.UtcNow);
+                outboxMessages.Add(BuildSessionCompletedOutbox(session));
                 break;
         }
 
-        await _repository.UpdateSessionAsync(session, cancellationToken);
+        await _repository.UpdateSessionAsync(session, outboxMessages, cancellationToken);
         return _mapper.Map<ChargingSessionDto>(session);
+    }
+
+    private Domain.OutboxMessage BuildSessionCompletedOutbox(Domain.ChargingSession session)
+    {
+        var evt = new ChargingSessionCompletedV1
+        {
+            SessionId = session.Id,
+            ReservationId = session.ReservationId,
+            StationId = session.StationId,
+            ChargerId = session.ChargerId,
+            StartedAtUtc = session.StartedAtUtc,
+            EndedAtUtc = session.EndedAtUtc ?? DateTime.UtcNow,
+            EnergyKWh = null
+        };
+        var correlationId = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+        var envelope = new EventEnvelope<ChargingSessionCompletedV1>(evt, correlationId: correlationId, producer: "reservation-service@1.0.0");
+        return new Domain.OutboxMessage
+        {
+            Id = envelope.EventId,
+            OccurredAtUtc = envelope.OccurredAtUtc,
+            Type = envelope.EventType,
+            RoutingKey = EventRoutingKeys.ChargingSessionCompletedV1,
+            PayloadJson = System.Text.Json.JsonSerializer.Serialize(envelope),
+            CorrelationId = envelope.CorrelationId
+        };
     }
 }

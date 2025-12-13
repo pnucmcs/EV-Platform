@@ -1,5 +1,4 @@
-using System.Text;
-using System.Text.Json;
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -11,7 +10,7 @@ namespace Ev.Shared.Messaging.RabbitMq;
 public interface IRabbitMqMessageHandler
 {
     bool CanHandle(string routingKey);
-    Task HandleAsync(string routingKey, ReadOnlyMemory<byte> body, CancellationToken cancellationToken);
+    Task HandleAsync(string routingKey, ReadOnlyMemory<byte> body, IBasicProperties properties, CancellationToken cancellationToken);
 }
 
 public sealed class RabbitMqConsumerHostedService : BackgroundService
@@ -19,17 +18,18 @@ public sealed class RabbitMqConsumerHostedService : BackgroundService
     private readonly RabbitMqOptions _options;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<RabbitMqConsumerHostedService> _logger;
+    private readonly IEnumerable<string> _bindings;
+    private readonly string _queueName;
     private IConnection? _connection;
     private IModel? _channel;
-    private string? _queue;
-    private readonly IEnumerable<string> _bindings;
 
-    public RabbitMqConsumerHostedService(RabbitMqOptions options, IServiceProvider serviceProvider, ILogger<RabbitMqConsumerHostedService> logger, IEnumerable<string> bindings)
+    public RabbitMqConsumerHostedService(RabbitMqOptions options, IServiceProvider serviceProvider, ILogger<RabbitMqConsumerHostedService> logger, string queueName, IEnumerable<string> bindings)
     {
         _options = options;
         _serviceProvider = serviceProvider;
         _logger = logger;
         _bindings = bindings;
+        _queueName = queueName;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -39,40 +39,52 @@ public sealed class RabbitMqConsumerHostedService : BackgroundService
             HostName = _options.HostName,
             Port = _options.Port,
             UserName = _options.UserName,
-            Password = _options.Password
+            Password = _options.Password,
+            DispatchConsumersAsync = true
         };
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
         _channel.ExchangeDeclare(_options.Exchange, ExchangeType.Topic, durable: true, autoDelete: false);
-        _queue = _channel.QueueDeclare().QueueName;
+        _channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: false);
+        _channel.BasicQos(0, _options.PrefetchCount, global: false);
+
         foreach (var binding in _bindings)
         {
-            _channel.QueueBind(_queue, _options.Exchange, binding);
+            _channel.QueueBind(_queueName, _options.Exchange, binding);
         }
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.Received += OnMessageReceivedAsync;
-        _channel.BasicConsume(_queue, autoAck: false, consumer: consumer);
+        _channel.BasicConsume(_queueName, autoAck: false, consumer: consumer);
         return Task.CompletedTask;
     }
 
     private async Task OnMessageReceivedAsync(object sender, BasicDeliverEventArgs ea)
     {
-        using var scope = _serviceProvider.CreateScope();
-        var handlers = scope.ServiceProvider.GetServices<IRabbitMqMessageHandler>();
-        var handled = false;
-        foreach (var handler in handlers)
+        using var activity = RabbitMqTelemetry.StartConsumeActivity(ea);
+        try
         {
-            if (handler.CanHandle(ea.RoutingKey))
+            using var scope = _serviceProvider.CreateScope();
+            var handlers = scope.ServiceProvider.GetServices<IRabbitMqMessageHandler>();
+            var handled = false;
+            foreach (var handler in handlers)
             {
-                await handler.HandleAsync(ea.RoutingKey, ea.Body, CancellationToken.None);
-                handled = true;
+                if (handler.CanHandle(ea.RoutingKey))
+                {
+                    await handler.HandleAsync(ea.RoutingKey, ea.Body, ea.BasicProperties, CancellationToken.None);
+                    handled = true;
+                }
+            }
+            _channel?.BasicAck(ea.DeliveryTag, multiple: false);
+            if (!handled)
+            {
+                _logger.LogWarning("No handler for routing key {RoutingKey}", ea.RoutingKey);
             }
         }
-        _channel?.BasicAck(ea.DeliveryTag, multiple: false);
-        if (!handled)
+        catch (Exception ex)
         {
-            _logger.LogWarning("No handler for routing key {RoutingKey}", ea.RoutingKey);
+            _logger.LogError(ex, "Failed to process message routingKey={RoutingKey} correlationId={CorrelationId}", ea.RoutingKey, ea.BasicProperties?.CorrelationId);
+            _channel?.BasicNack(ea.DeliveryTag, multiple: false, requeue: false);
         }
     }
 

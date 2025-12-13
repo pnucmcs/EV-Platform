@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddHttpClient<IStationDirectoryClient, StationDirectoryClient>(client =>
         {
             client.BaseAddress = new Uri(stationServiceBaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(5);
         });
         return services;
     }

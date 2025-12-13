@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\\..\\Domain\\Ev.Reservation.Domain\\Ev.Reservation.Domain.csproj" />
+    <ProjectReference Include="..\\..\\..\\..\\shared\\Ev.Platform.Contracts\\Ev.Platform.Contracts.csproj" />
     <ProjectReference Include="..\\..\\..\\..\\shared\\Ev.Shared.Messaging\\Ev.Shared.Messaging.csproj" />
   </ItemGroup>
 

@@ -36,7 +36,27 @@ public sealed class StationService : IStationService
             request.Longitude,
             StationStatus.Online);
 
-        await _repository.AddAsync(station, cancellationToken);
+        var correlationId = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+        var evt = new Ev.Platform.Contracts.Events.StationCreatedV1
+        {
+            StationId = station.Id,
+            Name = station.Name,
+            Latitude = station.Latitude,
+            Longitude = station.Longitude,
+            Status = station.Status.ToString()
+        };
+        var envelope = new Ev.Platform.Contracts.EventEnvelope<Ev.Platform.Contracts.Events.StationCreatedV1>(evt, correlationId: correlationId, producer: "station-service@1.0.0");
+        var outbox = new Ev.Station.Domain.OutboxMessage
+        {
+            Id = envelope.EventId,
+            OccurredAtUtc = envelope.OccurredAtUtc,
+            Type = envelope.EventType,
+            RoutingKey = Ev.Platform.Contracts.EventRoutingKeys.StationCreatedV1,
+            PayloadJson = System.Text.Json.JsonSerializer.Serialize(envelope),
+            CorrelationId = envelope.CorrelationId
+        };
+
+        await _repository.AddAsync(station, new[] { outbox }, cancellationToken);
         return _mapper.Map<StationDto>(station);
     }
 
@@ -48,11 +68,35 @@ public sealed class StationService : IStationService
             return null;
         }
 
+        var previousStatus = station.Status;
         station.UpdateName(request.Name);
         station.UpdateLocation(request.Latitude, request.Longitude);
         station.UpdateStatus(request.Status);
 
-        await _repository.UpdateAsync(station, cancellationToken);
+        var outboxMessages = new List<object>();
+        if (previousStatus != request.Status)
+        {
+            var correlationId = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? Guid.NewGuid().ToString();
+            var evt = new Ev.Platform.Contracts.Events.StationStatusChangedV1
+            {
+                StationId = station.Id,
+                PreviousStatus = previousStatus.ToString(),
+                NewStatus = request.Status.ToString(),
+                OccurredAtUtc = DateTime.UtcNow
+            };
+            var envelope = new Ev.Platform.Contracts.EventEnvelope<Ev.Platform.Contracts.Events.StationStatusChangedV1>(evt, correlationId: correlationId, producer: "station-service@1.0.0");
+            outboxMessages.Add(new Ev.Station.Domain.OutboxMessage
+            {
+                Id = envelope.EventId,
+                OccurredAtUtc = envelope.OccurredAtUtc,
+                Type = envelope.EventType,
+                RoutingKey = Ev.Platform.Contracts.EventRoutingKeys.StationStatusChangedV1,
+                PayloadJson = System.Text.Json.JsonSerializer.Serialize(envelope),
+                CorrelationId = envelope.CorrelationId
+            });
+        }
+
+        await _repository.UpdateAsync(station, outboxMessages, cancellationToken);
         return _mapper.Map<StationDto>(station);
     }
 
@@ -84,7 +128,7 @@ public sealed class StationService : IStationService
 
         var charger = Ev.Station.Domain.Charger.Create(request.Name, request.ConnectorType, request.Status);
         station.AddCharger(charger);
-        await _repository.UpdateAsync(station, cancellationToken);
+        await _repository.UpdateAsync(station, null, cancellationToken);
 
         return _mapper.Map<ChargerDto>(charger);
     }
@@ -107,7 +151,7 @@ public sealed class StationService : IStationService
         charger.UpdateConnectorType(request.ConnectorType);
         charger.UpdateStatus(request.Status);
 
-        await _repository.UpdateAsync(station, cancellationToken);
+        await _repository.UpdateAsync(station, null, cancellationToken);
         return _mapper.Map<ChargerDto>(charger);
     }
 
@@ -125,7 +169,7 @@ public sealed class StationService : IStationService
             return false;
         }
 
-        await _repository.UpdateAsync(station, cancellationToken);
+        await _repository.UpdateAsync(station, null, cancellationToken);
         return true;
     }
 }

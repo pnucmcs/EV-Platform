@@ -1,0 +1,29 @@
+stationservice:
+  image:
+    repository: station-service
+    tag: latest
+  secrets:
+    postgresConnection: "Host=postgres;Port=5432;Database=station_db;Username=app;Password=changeme"
+  env:
+    aspnetcoreEnvironment: Production
+    kestrelUrl: http://0.0.0.0:8080
+    app:
+      name: station-service
+      version: 1.0.0
+      environment: Production
+
+reservationservice:
+  image:
+    repository: reservation-service
+    tag: latest
+  secrets:
+    postgresConnection: "Host=postgres;Port=5432;Database=reservation_db;Username=app;Password=changeme"
+  env:
+    aspnetcoreEnvironment: Production
+    kestrelUrl: http://0.0.0.0:8080
+    app:
+      name: reservation-service
+      version: 1.0.0
+      environment: Production
+    services:
+      stationServiceBaseUrl: http://stationservice-api.ev-platform-dev.svc.cluster.local

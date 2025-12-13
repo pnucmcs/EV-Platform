@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "stationservice.fullname" . }}-config
+  labels:
+    {{- include "stationservice.labels" . | nindent 4 }}
+data:
+  ASPNETCORE_ENVIRONMENT: "{{ .Values.env.aspnetcoreEnvironment }}"
+  Kestrel__Endpoints__Http__Url: "{{ .Values.env.kestrelUrl }}"
+  App__Name: "{{ .Values.env.app.name }}"
+  App__Version: "{{ .Values.env.app.version }}"
+  App__Environment: "{{ .Values.env.app.environment }}"

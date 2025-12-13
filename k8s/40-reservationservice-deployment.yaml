@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reservationservice
+  namespace: ev-platform-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reservationservice
+  template:
+    metadata:
+      labels:
+        app: reservationservice
+    spec:
+      containers:
+        - name: reservationservice
+          image: reservation-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: reservationservice-config
+                  key: ASPNETCORE_ENVIRONMENT
+            - name: Kestrel__Endpoints__Http__Url
+              valueFrom:
+                configMapKeyRef:
+                  name: reservationservice-config
+                  key: Kestrel__Endpoints__Http__Url
+            - name: Services__StationService__BaseUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: reservationservice-config
+                  key: Services__StationService__BaseUrl
+            - name: ConnectionStrings__Postgres
+              valueFrom:
+                secretKeyRef:
+                  name: reservationservice-secret
+                  key: ConnectionStrings__Postgres
+            - name: App__Name
+              valueFrom:
+                configMapKeyRef:
+                  name: reservationservice-config
+                  key: App__Name
+            - name: App__Version
+              valueFrom:
+                configMapKeyRef:
+                  name: reservationservice-config
+                  key: App__Version
+            - name: App__Environment
+              valueFrom:
+                configMapKeyRef:
+                  name: reservationservice-config
+                  key: App__Environment
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10

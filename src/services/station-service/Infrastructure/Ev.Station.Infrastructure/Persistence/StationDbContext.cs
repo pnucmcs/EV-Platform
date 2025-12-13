@@ -10,6 +10,7 @@ public sealed class StationDbContext : DbContext
     }
 
     public DbSet<Station.Domain.Station> Stations => Set<Station.Domain.Station>();
+    public DbSet<Domain.OutboxMessage> OutboxMessages => Set<Domain.OutboxMessage>();
     public DbSet<Charger> Chargers => Set<Charger>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -74,6 +75,21 @@ public sealed class StationDbContext : DbContext
                 .IsRequired();
 
             entity.Property(x => x.UpdatedAtUtc);
+        });
+
+        modelBuilder.Entity<Domain.OutboxMessage>(entity =>
+        {
+            entity.ToTable("outbox_messages");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).IsRequired();
+            entity.Property(x => x.Type).IsRequired().HasMaxLength(200);
+            entity.Property(x => x.RoutingKey).IsRequired().HasMaxLength(200);
+            entity.Property(x => x.PayloadJson).IsRequired();
+            entity.Property(x => x.CorrelationId).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.OccurredAtUtc).IsRequired();
+            entity.Property(x => x.ProcessedAtUtc);
+            entity.Property(x => x.PublishAttempts).HasDefaultValue(0);
+            entity.Property(x => x.LastError);
         });
     }
 }

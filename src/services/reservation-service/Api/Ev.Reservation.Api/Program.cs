@@ -4,8 +4,24 @@ using FluentValidation.AspNetCore;
 using MediatR;
 using Ev.Shared.Messaging.RabbitMq;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Text.Json;
+using Ev.Reservation.Api.Middleware;
+using Ev.Reservation.Api.Configuration;
+using Ev.Reservation.Infrastructure.Outbox;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel((context, options) =>
+{
+    options.Configure(context.Configuration.GetSection("Kestrel"));
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -16,9 +32,27 @@ builder.Services.AddValidatorsFromAssemblyContaining<Ev.Reservation.Application.
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddMediatR(typeof(Ev.Reservation.Application.Services.IReservationService).Assembly);
 
-var connString = builder.Configuration.GetConnectionString("ReservationDb") ??
-                 builder.Configuration["EV__POSTGRES__CONNECTIONSTRING"] ??
-                 "Host=192.168.1.191;Port=5432;Database=reservation_db;Username=admin;Password=admin";
+builder.Services.AddOptions<AppOptions>()
+    .BindConfiguration("App")
+    .ValidateOnStart();
+
+builder.Services.AddOptions<DatabaseOptions>()
+    .BindConfiguration("Database")
+    .PostConfigure(options =>
+    {
+        options.ConnectionString ??= builder.Configuration.GetConnectionString("Postgres");
+    })
+    .ValidateOnStart();
+
+builder.Services.AddOptions<ServiceEndpointsOptions>()
+    .BindConfiguration("Services")
+    .ValidateOnStart();
+
+builder.Services.Configure<OutboxOptions>(builder.Configuration.GetSection("Outbox"));
+
+var dbOptions = builder.Configuration.GetSection("Database").Get<DatabaseOptions>() ?? new DatabaseOptions();
+dbOptions.ConnectionString ??= builder.Configuration.GetConnectionString("Postgres");
+var connString = dbOptions.ConnectionString ?? throw new InvalidOperationException("ConnectionStrings:Postgres must be configured.");
 
 var rabbitSection = builder.Configuration.GetSection("RabbitMq");
 var rabbitOptions = new RabbitMqOptions
@@ -42,11 +76,72 @@ builder.Services.AddRabbitMqPublisher(opt =>
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ReservationDbContext>("reservation-db");
 
-var stationServiceBaseUrl = builder.Configuration["Services:StationServiceBaseUrl"]
+var serviceOptions = builder.Configuration.GetSection("Services").Get<ServiceEndpointsOptions>() ?? new ServiceEndpointsOptions();
+var stationServiceBaseUrl = serviceOptions.StationService?.BaseUrl
                             ?? builder.Configuration["EV__SERVICES__STATION__BASEURL"]
-                            ?? "http://localhost:5046";
+                            ?? "http://localhost:8080";
 
 builder.Services.AddReservationInfrastructure(connString, rabbitOptions, stationServiceBaseUrl);
+builder.Services.AddHostedService<OutboxDispatcherHostedService>();
+
+var appOptions = builder.Configuration.GetSection("App").Get<AppOptions>() ?? new AppOptions();
+var otelSection = builder.Configuration.GetSection("OpenTelemetry");
+var otelEnabled = otelSection.GetValue<bool?>("Enabled") ?? true;
+if (otelEnabled)
+{
+    builder.Services.AddOpenTelemetry()
+        .ConfigureResource(r => r.AddService(serviceName: "reservation-service", serviceVersion: appOptions.Version ?? "1.0.0")
+            .AddAttributes(new[]
+            {
+                new KeyValuePair<string, object>("deployment.environment", appOptions.Environment ?? "Production")
+            }))
+        .WithTracing(tracerProviderBuilder =>
+        {
+            tracerProviderBuilder
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddEntityFrameworkCoreInstrumentation()
+                .AddSource(RabbitMqTelemetry.ActivitySourceName);
+
+            var exporter = otelSection.GetValue<string>("Exporter") ?? "otlp";
+            if (exporter.Equals("otlp", StringComparison.OrdinalIgnoreCase))
+            {
+                var endpoint = otelSection.GetSection("Otlp").GetValue<string>("Endpoint") ?? "http://localhost:4317";
+                tracerProviderBuilder.AddOtlpExporter(o => o.Endpoint = new Uri(endpoint));
+            }
+        })
+        .WithMetrics(metricsBuilder =>
+        {
+            metricsBuilder.AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddPrometheusExporter();
+        });
+}
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var problem = new ValidationProblemDetails(context.ModelState)
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Instance = context.HttpContext.Request.Path,
+            Extensions =
+            {
+                ["traceId"] = context.HttpContext.TraceIdentifier,
+                ["correlationId"] = context.HttpContext.Response.Headers["X-Correlation-ID"].ToString()
+            }
+        };
+        return new BadRequestObjectResult(problem);
+    };
+});
+
+builder.Host.UseSerilog((ctx, services, cfg) =>
+{
+    cfg.ReadFrom.Configuration(ctx.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+});
 
 var app = builder.Build();
 
@@ -55,6 +150,34 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseSerilogRequestLogging();
+app.UseMiddleware<CorrelationIdMiddleware>();
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/problem+json";
+
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        var problem = new ProblemDetails
+        {
+            Title = "An unexpected error occurred.",
+            Status = StatusCodes.Status500InternalServerError,
+            Instance = context.Request.Path,
+        };
+        problem.Extensions["traceId"] = context.TraceIdentifier;
+        problem.Extensions["correlationId"] = context.Response.Headers["X-Correlation-ID"].ToString();
+        if (app.Environment.IsDevelopment() && exception is not null)
+        {
+            problem.Detail = exception.Message;
+        }
+
+        await JsonSerializer.SerializeAsync(context.Response.Body, problem);
+    });
+});
 
 app.UseAuthorization();
 
@@ -67,5 +190,6 @@ using (var scope = app.Services.CreateScope())
 app.MapControllers();
 app.MapHealthChecks("/health/ready");
 app.MapHealthChecks("/health/live");
+app.MapPrometheusScrapingEndpoint("/metrics");
 
 app.Run();

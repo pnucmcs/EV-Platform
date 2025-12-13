@@ -14,13 +14,13 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddRabbitMqConsumer(this IServiceCollection services, Action<RabbitMqOptions> configure, params string[] bindings)
+    public static IServiceCollection AddRabbitMqConsumer(this IServiceCollection services, Action<RabbitMqOptions> configure, string queueName, params string[] bindings)
     {
         var options = new RabbitMqOptions();
         configure(options);
         services.AddSingleton(options);
         services.AddHostedService(sp =>
-            new RabbitMqConsumerHostedService(options, sp, sp.GetRequiredService<ILogger<RabbitMqConsumerHostedService>>(), bindings));
+            new RabbitMqConsumerHostedService(options, sp, sp.GetRequiredService<ILogger<RabbitMqConsumerHostedService>>(), queueName, bindings));
         return services;
     }
 }

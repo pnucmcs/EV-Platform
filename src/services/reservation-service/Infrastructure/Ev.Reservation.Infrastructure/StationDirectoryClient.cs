@@ -14,7 +14,19 @@ public sealed class StationDirectoryClient : IStationDirectoryClient
 
     public async Task<bool> ExistsAsync(Guid stationId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"/api/v1/stations/{stationId}", cancellationToken);
+        HttpResponseMessage response;
+        try
+        {
+            response = await _httpClient.GetAsync($"/api/v1/stations/{stationId}", cancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            throw new HttpRequestException("StationService request timed out.", null, System.Net.HttpStatusCode.ServiceUnavailable);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new HttpRequestException("StationService unreachable.", ex, System.Net.HttpStatusCode.ServiceUnavailable);
+        }
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             return false;

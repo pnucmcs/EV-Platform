@@ -1,0 +1,6 @@
+apiVersion: v2
+name: reservationservice
+description: Helm chart for ReservationService
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

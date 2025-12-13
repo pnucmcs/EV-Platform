@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: reservationservice-config
+  namespace: ev-platform-dev
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  Kestrel__Endpoints__Http__Url: "http://0.0.0.0:8080"
+  Services__StationService__BaseUrl: "http://stationservice-api.ev-platform-dev.svc.cluster.local"
+  App__Name: "reservation-service"
+  App__Version: "1.0.0"
+  App__Environment: "Production"

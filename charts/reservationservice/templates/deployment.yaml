@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reservationservice.fullname" . }}
+  labels:
+    {{- include "reservationservice.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "reservationservice.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "reservationservice.fullname" . }}
+        {{- include "reservationservice.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: reservationservice
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "reservationservice.fullname" . }}-config
+                  key: ASPNETCORE_ENVIRONMENT
+            - name: Kestrel__Endpoints__Http__Url
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "reservationservice.fullname" . }}-config
+                  key: Kestrel__Endpoints__Http__Url
+            - name: Services__StationService__BaseUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "reservationservice.fullname" . }}-config
+                  key: Services__StationService__BaseUrl
+            - name: App__Name
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "reservationservice.fullname" . }}-config
+                  key: App__Name
+            - name: App__Version
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "reservationservice.fullname" . }}-config
+                  key: App__Version
+            - name: App__Environment
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "reservationservice.fullname" . }}-config
+                  key: App__Environment
+            - name: ConnectionStrings__Postgres
+              valueFrom:
+                {{- if .Values.secrets.existingSecret }}
+                secretKeyRef:
+                  name: {{ .Values.secrets.existingSecret }}
+                  key: ConnectionStrings__Postgres
+                {{- else }}
+                secretKeyRef:
+                  name: {{ include "reservationservice.fullname" . }}-secret
+                  key: ConnectionStrings__Postgres
+                {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.path }}
+              port: {{ .Values.livenessProbe.port }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: {{ .Values.readinessProbe.port }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}

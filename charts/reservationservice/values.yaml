@@ -1,0 +1,55 @@
+image:
+  repository: reservation-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  port: 80
+  targetPort: 8080
+
+env:
+  aspnetcoreEnvironment: Production
+  kestrelUrl: http://0.0.0.0:8080
+  app:
+    name: reservation-service
+    version: 1.0.0
+    environment: Production
+  services:
+    stationServiceBaseUrl: http://stationservice-api.ev-platform-dev.svc.cluster.local
+
+secrets:
+  create: true
+  existingSecret: ""
+  postgresConnection: "Host=postgres;Port=5432;Database=reservation_db;Username=app;Password=changeme"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+livenessProbe:
+  path: /health/live
+  port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+readinessProbe:
+  path: /health/ready
+  port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  paths:
+    - path: /reservation(/|$)(.*)
+      pathType: Prefix
+      backendPort: 80

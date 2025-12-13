@@ -7,7 +7,7 @@ public sealed class InMemoryStationRepository : IStationRepository
     private readonly List<Ev.Station.Domain.Station> _stations = new();
     private readonly SemaphoreSlim _gate = new(1, 1);
 
-    public async Task AddAsync(Ev.Station.Domain.Station station, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Ev.Station.Domain.Station station, IEnumerable<object>? outboxMessages = null, CancellationToken cancellationToken = default)
     {
         await _gate.WaitAsync(cancellationToken);
         try
@@ -46,7 +46,7 @@ public sealed class InMemoryStationRepository : IStationRepository
         }
     }
 
-    public async Task UpdateAsync(Ev.Station.Domain.Station station, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Ev.Station.Domain.Station station, IEnumerable<object>? outboxMessages = null, CancellationToken cancellationToken = default)
     {
         await _gate.WaitAsync(cancellationToken);
         try

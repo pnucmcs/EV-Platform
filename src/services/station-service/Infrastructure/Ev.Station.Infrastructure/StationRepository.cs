@@ -13,9 +13,19 @@ public sealed class StationRepository : IStationRepository
         _db = db;
     }
 
-    public async Task AddAsync(Domain.Station station, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Domain.Station station, IEnumerable<object>? outboxMessages = null, CancellationToken cancellationToken = default)
     {
         _db.Stations.Add(station);
+        if (outboxMessages is not null)
+        {
+            foreach (var msg in outboxMessages)
+            {
+                if (msg is Domain.OutboxMessage om)
+                {
+                    _db.OutboxMessages.Add(om);
+                }
+            }
+        }
         await _db.SaveChangesAsync(cancellationToken);
     }
 
@@ -35,9 +45,19 @@ public sealed class StationRepository : IStationRepository
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task UpdateAsync(Domain.Station station, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Domain.Station station, IEnumerable<object>? outboxMessages = null, CancellationToken cancellationToken = default)
     {
         _db.Stations.Update(station);
+        if (outboxMessages is not null)
+        {
+            foreach (var msg in outboxMessages)
+            {
+                if (msg is Domain.OutboxMessage om)
+                {
+                    _db.OutboxMessages.Add(om);
+                }
+            }
+        }
         await _db.SaveChangesAsync(cancellationToken);
     }
 

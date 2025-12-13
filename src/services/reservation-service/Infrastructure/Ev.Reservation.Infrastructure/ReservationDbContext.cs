@@ -11,6 +11,7 @@ public sealed class ReservationDbContext : DbContext
 
     public DbSet<Reservation.Domain.Reservation> Reservations => Set<Reservation.Domain.Reservation>();
     public DbSet<ChargingSession> ChargingSessions => Set<ChargingSession>();
+    public DbSet<Reservation.Domain.OutboxMessage> OutboxMessages => Set<Reservation.Domain.OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,6 +43,21 @@ public sealed class ReservationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(x => x.ReservationId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Reservation.Domain.OutboxMessage>(entity =>
+        {
+            entity.ToTable("outbox_messages");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).IsRequired();
+            entity.Property(x => x.Type).IsRequired().HasMaxLength(200);
+            entity.Property(x => x.RoutingKey).IsRequired().HasMaxLength(200);
+            entity.Property(x => x.PayloadJson).IsRequired();
+            entity.Property(x => x.CorrelationId).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.OccurredAtUtc).IsRequired();
+            entity.Property(x => x.ProcessedAtUtc);
+            entity.Property(x => x.PublishAttempts).HasDefaultValue(0);
+            entity.Property(x => x.LastError);
         });
     }
 }
