@@ -1,0 +1,42 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "notificationservice.fullname" . }}-allow-postgres-egress
+  labels:
+    {{- include "notificationservice.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "notificationservice.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: {{ .Values.networkPolicy.postgresCidr }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.networkPolicy.postgresPort }}
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.rabbitmqNamespace }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.networkPolicy.rabbitmqPort }}
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.networkPolicy.kubeDnsNamespace }}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        {{- range .Values.networkPolicy.kubeDnsPorts }}
+        - protocol: UDP
+          port: {{ . }}
+        - protocol: TCP
+          port: {{ . }}
+        {{- end }}
+{{- end }}

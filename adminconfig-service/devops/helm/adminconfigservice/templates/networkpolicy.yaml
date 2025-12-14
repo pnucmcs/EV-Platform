@@ -1,0 +1,21 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "adminconfigservice.fullname" . }}-allow-postgres-egress
+  labels:
+    {{- include "adminconfigservice.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "adminconfigservice.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: {{ .Values.networkPolicy.postgresCidr }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.networkPolicy.postgresPort }}
+{{- end }}
