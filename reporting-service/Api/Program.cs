@@ -61,7 +61,7 @@ builder.Services.AddRabbitMqConsumer(opt =>
     EventRoutingKeys.ReservationCancelledV1,
     EventRoutingKeys.ChargingSessionStartedV1,
     EventRoutingKeys.ChargingSessionCompletedV1);
-builder.Services.AddSingleton<IRabbitMqMessageHandler, ReportingEventsHandler>();
+builder.Services.AddScoped<IRabbitMqMessageHandler, ReportingEventsHandler>();
 
 var appOptions = builder.Configuration.GetSection("App").Get<AppOptions>() ?? new AppOptions();
 var otelSection = builder.Configuration.GetSection("OpenTelemetry");

@@ -2,17 +2,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "notificationservice.fullname" . }}-allow-postgres-egress
+  name: {{ include "telemetryservice.fullname" . }}-allow-egress
   labels:
-    {{- include "notificationservice.labels" . | nindent 4 }}
+    {{- include "telemetryservice.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      {{- include "notificationservice.selectorLabels" . | nindent 6 }}
+      {{- include "telemetryservice.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Egress
   egress:
-    # Allow DNS resolution so service names like "rabbitmq" can be resolved
+    # Allow DNS resolution so service names can be resolved
     - to:
         - namespaceSelector:
             matchLabels:
@@ -44,6 +44,7 @@ spec:
       ports:
         - protocol: TCP
           port: {{ .Values.networkPolicy.rabbitmq.port | default (int .Values.env.RabbitMq__Port) }}
+    # Allow traffic to Postgres
     - to:
         - ipBlock:
             cidr: {{ .Values.networkPolicy.postgresCidr }}

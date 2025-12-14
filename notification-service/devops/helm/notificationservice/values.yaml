@@ -50,10 +50,10 @@ env:
   OpenTelemetry__Enabled: "true"
   OpenTelemetry__Exporter: "otlp"
   OpenTelemetry__Otlp__Endpoint: "http://otel-collector:4317"
-  RabbitMq__Host: "rabbitmq"
+  RabbitMq__Host: "rabbitmq.rabbitmq.svc.cluster.local"
   RabbitMq__Port: "5672"
-  RabbitMq__Username: "guest"
-  RabbitMq__Password: "guest"
+  RabbitMq__Username: "admin"
+  RabbitMq__Password: "supersecret"
   RabbitMq__Exchange: "ev.platform"
 
 connectionStrings:
@@ -97,11 +97,14 @@ networkPolicy:
   enabled: true
   postgresCidr: "192.168.1.191/32"
   postgresPort: 5432
-  rabbitmqNamespace: "rabbitmq"
-  rabbitmqPort: 5672
-  kubeDnsNamespace: "kube-system"
-  kubeDnsPorts:
-    - 53
+  rabbitmq:
+    # Override these selectors if your RabbitMQ release uses different labels/namespace
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: rabbitmq
+    podSelector:
+      app.kubernetes.io/name: rabbitmq
+    port: 5672
 
 nodeSelector: {}
 tolerations: []
